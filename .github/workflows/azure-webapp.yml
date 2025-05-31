@@ -1,4 +1,4 @@
-name: Deploy eShopOnWeb to Azure
+name: Build and deploy ASP.NET Core app to Azure Web App - eshopweb
 
 on:
   push:
@@ -6,27 +6,32 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0.x'
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
 
-    - name: Build project
-      run: dotnet build src/Web/Web.csproj --configuration Release
+      - name: Restore dependencies
+        run: dotnet restore
 
-    - name: Publish project
-      run: dotnet publish src/Web/Web.csproj --configuration Release --output publish_output
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
 
-    - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: eshopweb  # CHANGE this if your App Service name is different
-        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
-        package: ./publish_output
+      - name: Publish
+        run: dotnet publish src/Web/Web.csproj --configuration Release --output ./publish
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: eshopweb                   # 👈 Your App Service name
+          slot-name: Production
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+          package: ./publish
+
