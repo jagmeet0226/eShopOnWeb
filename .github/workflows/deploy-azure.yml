@@ -18,10 +18,10 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Build app
-        run: dotnet build eShopOnWeb.sln --configuration Release
+        run: dotnet build src/Web/Web.csproj --configuration Release
 
       - name: Publish app
-        run: dotnet publish eShopOnWeb.sln --configuration Release --output ./output
+        run: dotnet publish src/Web/Web.csproj --configuration Release --output ./output
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -41,8 +41,7 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'eshopweb' # your App Service name
+          app-name: 'eshopweb' # your Azure App Service name
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A143FD9CDD714A6DA1EA5765D3682E82 }}
           package: .
-
