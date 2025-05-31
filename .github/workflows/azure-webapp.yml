@@ -1,0 +1,32 @@
+name: Deploy eShopOnWeb to Azure
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Build project
+      run: dotnet build src/Web/Web.csproj --configuration Release
+
+    - name: Publish project
+      run: dotnet publish src/Web/Web.csproj --configuration Release --output publish_output
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: eshopweb  # CHANGE this if your App Service name is different
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+        package: ./publish_output
