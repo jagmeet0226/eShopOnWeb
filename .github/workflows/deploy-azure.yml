@@ -1,3 +1,5 @@
+
+
 name: Build and deploy ASP.NET Core app to Azure Web App - eshopweb
 
 on:
@@ -37,12 +39,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: webapp
+          path: ./webapp
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'eshopweb' # 👈 Your Azure App Service name
+          app-name: 'eshopweb'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A143FD9CDD714A6DA1EA5765D3682E82 }}
-          package: ./output
-
+          package: ./webapp
